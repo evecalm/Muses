@@ -1,0 +1,25 @@
+{
+  "name": "muses",
+  "version": "0.0.1",
+  "description": "a light weight music blog system",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://evecalm@github.com/evecalm/Muses.git"
+  },
+  "keywords": [
+    "music blog system",
+    "musc",
+    "blog",
+    "cms"
+  ],
+  "author": "Saiya",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/evecalm/Muses/issues"
+  },
+  "homepage": "https://github.com/evecalm/Muses#readme"
+}
