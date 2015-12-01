@@ -125,8 +125,8 @@ module.exports = (grunt)->
         delay: 3000
     # 执行shell命令
     exec:
-      viewblog: 'node lib/server/app.js blog'
-      admin: 'node lib/server/app.js admin'
+      viewblog: 'coffee lib/server/app.coffee blog'
+      admin: 'coffee lib/server/app.coffee admin'
 
 
   grunt.loadNpmTasks 'grunt-contrib-concat'

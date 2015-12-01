@@ -6,6 +6,9 @@ utils = require 'utility'
 _ = require 'lodash'
 # fs = require 'fs'
 
+# 默认搜索结果数目大小
+DEFAULT_RESULT_SIZE = 10
+
 # 发送请求
 request = (method, params, done)->
   apiUrl = 'http://api.xiami.com/web'
@@ -23,15 +26,17 @@ request = (method, params, done)->
   data = _.extend {}, defaultParams, params
   data.r = method
 
+  console.log 'query data: %o', data
+
   queryData = querystring.stringify( data ).replace '%20', '+'
 
   path = '/web?' + queryData
 
   req = http.request
-    host: 'api.xiami.com'
-    path: path
-    method: 'GET'
-    headers: headers
+    host    : 'api.xiami.com'
+    path    : path
+    method  : 'GET'
+    headers : headers
   , (res)->
     json = ''
     res.setEncoding 'utf8'
@@ -81,13 +86,36 @@ request = (method, params, done)->
     "total": 1
   }
 }
+
+# search(params, done)
+# search(key, done)
+# search(key, page, limit, done)
 ###
-search = (kwd, page, size, done)->
-  request 'search/songs', {
-    key: kwd
-    page: page
-    limit: size
-  }, done
+search = (key, page, limit, done)->
+  params = {}
+  if typeof page is 'function'
+    done = page
+    if typeof key isnt 'string' and key
+      params.key = key.key
+      params.page = key.page
+      params.limit = key.limit
+      params.page = 1 unless params.page 
+      params.limit = DEFAULT_RESULT_SIZE unless params.limit 
+    else
+      params.key = key
+      params.page = 1
+      params.limit = DEFAULT_RESULT_SIZE
+  else
+    params = {
+      key   : key
+      page  : page
+      limit : limit
+    }
+
+  params.is_pub = 'all'
+  params.category = '-1'
+
+  request 'search/songs', params, done
 
 ### 获取歌曲的详细信息
 {
@@ -120,9 +148,12 @@ search = (kwd, page, size, done)->
 }
 ###
 getSongInfo = (songId, done)->
-  request 'song/detail', {
-    id: songId
-  }, done
+  if typeof songId is 'object'
+    params = songId
+  else
+    params = id: songId
+
+  request 'song/detail', params, done
 
 ### 获取专辑信息
 {
@@ -156,9 +187,12 @@ getSongInfo = (songId, done)->
 }
 ###
 getAlbumInfo = (albumId, done)->
-  request 'album/detail', {
-    id: albumId
-  }, done
+  if typeof albumId is 'object'
+    params = albumId
+  else
+    params = id: albumId
+
+  request 'album/detail', params, done
 
 ### 获取歌手信息
 {
@@ -181,10 +215,19 @@ getAlbumInfo = (albumId, done)->
 }
 ###
 getArtistInfo = (artistId, done)->
-  request resp, 'artist/detail', {
-    id: artistId
-  }, done
-search '张一清', 1, 10
+  if typeof artistId is 'object'
+    params = artistId
+  else
+    params = id: artistId
+
+  request 'artist/detail', params, done
+
+# search '张一清', 1, 10
+
+exports.search = search
+exports.getSongInfo = getSongInfo
+exports.getAlbumInfo = getAlbumInfo
+exports.getArtistInfo = getArtistInfo
 
 # getSongInfo null, 24019
 
